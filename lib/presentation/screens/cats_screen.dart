@@ -1,12 +1,13 @@
-import 'package:cats_app/presentation/widgets/cat_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:cats_app/constants/my_colors.dart';
 import '../../data/models/cats.dart';
 
 import 'package:cats_app/business_logic/cubit/cats_state.dart';
 import 'package:cats_app/business_logic/cubit/cats_cubit.dart';
 
+import 'package:cats_app/presentation/widgets/cat_item.dart';
 
 class CatsScreen extends StatefulWidget {
   const CatsScreen({Key? key}) : super(key: key);
@@ -17,41 +18,113 @@ class CatsScreen extends StatefulWidget {
 
 class _CatsScreenState extends State<CatsScreen> {
   late List<Cat> allCats;
+  late List<Cat> searchResultCats;
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    allCats = BlocProvider.of<CatsCubit>(context).getAllCats();
+    BlocProvider.of<CatsCubit>(context).getAllCats();
   }
 
-  Widget buildBlocWidget() {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: _isSearching ? _buildSearchField() : _buildAppBarTitle(),
+        leading: _isSearching ? const BackButton() : null,
+        actions: _buildAppBarActions(),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: _buildBlocWidget(),
+      ),
+    );
+  }
+
+  Widget _buildAppBarTitle() {
+    return const Text('   Cats',style: TextStyle(color: MyColors.myPrimary),);
+  }
+  List<Widget> _buildAppBarActions() {
+    if (_isSearching) {
+      return [
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            _clearSearchQuery();
+            Navigator.pop(context);
+          },
+        ),
+      ];
+    } else {
+      return [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: _startSearch,
+        ),
+      ];
+    }
+  }
+
+  Widget _buildSearchField() {
+    return TextField(
+      controller: _searchController,
+      autofocus: true,
+      decoration: const InputDecoration(
+        hintText: 'Search by tag...',
+        border: InputBorder.none,
+        hintStyle: TextStyle(color: Colors.white30),
+      ),
+      style: const TextStyle(color: MyColors.myPrimary, fontSize: 16.0),
+      onChanged: (query) {
+        searchByTag(query);
+      },
+    );
+  }
+  void searchByTag(String query){
+    searchResultCats = allCats
+        .where((cat) => cat.tags!.any(
+            (tag) => tag.toLowerCase().contains(query.toLowerCase())))
+        .toList();
+    setState(() {});
+  }
+  void _startSearch() {
+    ModalRoute.of(context)!
+        .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+    setState(() {
+      _isSearching = true;
+    });
+  }
+  void _stopSearching() {
+    _clearSearchQuery();
+    setState(() {
+      _isSearching = false;
+    });
+  }
+  void _clearSearchQuery() {
+    setState(() {
+      _searchController.clear();
+    });
+  }
+
+  Widget _buildBlocWidget() {
     return BlocBuilder<CatsCubit, CatsState>(
       builder: (context, state) {
         if (state is CatsLoaded) {
           allCats = state.cats;
-          return buildLoadedListWidgets();
+          return _buildLoadedListWidgets();
         } else if (state is CatsError) {
           return const Center(
             child: Text("error"),
           );
         } else {
-          return showLoadingIndicator();
+          return _showLoadingIndicator();
         }
       },
     );
   }
-
-  Widget showLoadingIndicator() {
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
-  }
-
-  Widget buildLoadedListWidgets() {
-    return buildCatsGrid();
-  }
-
-  Widget buildCatsGrid() {
+  Widget _buildLoadedListWidgets() {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -61,28 +134,14 @@ class _CatsScreenState extends State<CatsScreen> {
       ),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        return CatItem(cat:allCats[index]);
+        return CatItem(cat: _searchController.text.isEmpty? allCats[index]: searchResultCats[index]);
       },
-      itemCount: allCats.length,
+      itemCount: _searchController.text.isEmpty? allCats.length: searchResultCats.length,
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cats'),
-        actions: [
-          Image.asset(
-            'assets/images/loading-animation.gif',
-            width: 50,
-            height: 50,),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: buildBlocWidget(),
-      ),
+  Widget _showLoadingIndicator() {
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 }

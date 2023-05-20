@@ -22,18 +22,17 @@ class CatItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           child: cat.isNull
               ? FadeInImage.assetNetwork(
-            placeholder: 'assets/images/loading-animation.gif',
-            image: '$baseUrl/c',
-            fit: BoxFit.cover,
-          )
+                  placeholder: 'assets/images/loading-animation.gif',
+                  image: '$baseUrl/c',
+                  fit: BoxFit.cover,
+                )
               : FadeInImage.assetNetwork(
-            placeholder: 'assets/images/loading-animation.gif',
-            image: '$baseUrl/c/${cat.sId}',
-            fit: BoxFit.cover,
-          ),
+                  placeholder: 'assets/images/loading-animation.gif',
+                  image: '$baseUrl/c/${cat.sId}',
+                  fit: BoxFit.cover,
+                ),
         ),
       ),
     );
   }
 }
-
