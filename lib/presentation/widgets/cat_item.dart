@@ -9,28 +9,37 @@ class CatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridTile(
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: Colors.grey,
-            width: 3,
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed(catsDetailsScreen, arguments: cat);
+      },
+      child: GridTile(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: Colors.grey,
+              width: 3,
+            ),
           ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: cat.isNull
-              ? FadeInImage.assetNetwork(
-                  placeholder: 'assets/images/loading-animation.gif',
-                  image: '$baseUrl/c',
-                  fit: BoxFit.cover,
-                )
-              : FadeInImage.assetNetwork(
-                  placeholder: 'assets/images/loading-animation.gif',
-                  image: '$baseUrl/c/${cat.sId}',
-                  fit: BoxFit.cover,
-                ),
+          child: Hero(
+            tag: cat.sId!,
+            transitionOnUserGestures: true,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: cat.isNull
+                  ? FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/loading-animation.gif',
+                      image: '$baseUrl/c',
+                      fit: BoxFit.cover,
+                    )
+                  : FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/loading-animation.gif',
+                      image: '$baseUrl/c/${cat.sId}',
+                      fit: BoxFit.cover,
+                    ),
+            ),
+          ),
         ),
       ),
     );

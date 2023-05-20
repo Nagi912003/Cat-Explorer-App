@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'constants/strings.dart';
+import 'data/models/cats.dart';
 
 import 'package:cats_app/data/repositories/cats_repository.dart';
 import 'package:cats_app/data/web_services/cats_web_services.dart';
@@ -37,7 +38,8 @@ class AppRouter {
             ));
 
       case catsDetailsScreen:
-        return MaterialPageRoute(builder: (_) => const CatsDetailsScreen());
+        final cat = settings.arguments as Cat;
+        return MaterialPageRoute(builder: (_) => CatsDetailsScreen(cat: cat,));
       // default:
       //   return MaterialPageRoute(builder: (_) => const PageNotFound());
     }

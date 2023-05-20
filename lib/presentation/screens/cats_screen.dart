@@ -31,7 +31,9 @@ class _CatsScreenState extends State<CatsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.myWhite,
       appBar: AppBar(
+        //backgroundColor: MyColors.myWhite,
         title: _isSearching ? _buildSearchField() : _buildAppBarTitle(),
         leading: _isSearching ? const BackButton() : null,
         actions: _buildAppBarActions(),
