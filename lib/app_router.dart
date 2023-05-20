@@ -9,7 +9,7 @@ import 'package:cats_app/data/web_services/cats_web_services.dart';
 
 import 'package:cats_app/business_logic/cubit/cats_cubit.dart';
 
-import 'presentation/screens/cats_details_screen.dart';
+import 'presentation/screens/cat_details_screen.dart';
 import 'presentation/screens/cats_screen.dart';
 
 class AppRouter {
@@ -39,7 +39,7 @@ class AppRouter {
 
       case catsDetailsScreen:
         final cat = settings.arguments as Cat;
-        return MaterialPageRoute(builder: (_) => CatsDetailsScreen(cat: cat,));
+        return MaterialPageRoute(builder: (_) => CatDetailsScreen(cat: cat,));
       // default:
       //   return MaterialPageRoute(builder: (_) => const PageNotFound());
     }

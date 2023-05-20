@@ -5,9 +5,9 @@ import 'package:cats_app/data/models/cats.dart';
 
 import '../../constants/strings.dart';
 
-class CatsDetailsScreen extends StatelessWidget {
+class CatDetailsScreen extends StatelessWidget {
   final Cat cat;
-  const CatsDetailsScreen({Key? key, required this.cat}) : super(key: key);
+  const CatDetailsScreen({Key? key, required this.cat}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 
 import 'package:cats_app/constants/my_colors.dart';
 import '../../data/models/cats.dart';
@@ -40,14 +41,40 @@ class _CatsScreenState extends State<CatsScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: _buildBlocWidget(),
+        child: OfflineBuilder(
+          connectivityBuilder: (
+            BuildContext context,
+            ConnectivityResult connectivity,
+            Widget child,
+          ) {
+            final bool connected = connectivity != ConnectivityResult.none;
+
+            if (connected) {
+              return _buildBlocWidget();
+            } else {
+              return _buildNoInternetWidget();
+            }
+          },
+          child: Center(
+            child: _showLoadingIndicator(),
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildAppBarTitle() {
-    return const Text('   Cats',style: TextStyle(color: MyColors.myPrimary),);
+    return ElevatedButton(
+      onPressed: () {
+        BlocProvider.of<CatsCubit>(context).getAllCats();
+      },
+      child: const Text(
+        'Cats',
+        style: TextStyle(color: MyColors.myPrimary, fontSize: 20),
+      ),
+    );
   }
+
   List<Widget> _buildAppBarActions() {
     if (_isSearching) {
       return [
@@ -84,13 +111,15 @@ class _CatsScreenState extends State<CatsScreen> {
       },
     );
   }
-  void searchByTag(String query){
+
+  void searchByTag(String query) {
     searchResultCats = allCats
-        .where((cat) => cat.tags!.any(
-            (tag) => tag.toLowerCase().contains(query.toLowerCase())))
+        .where((cat) => cat.tags!
+            .any((tag) => tag.toLowerCase().contains(query.toLowerCase())))
         .toList();
     setState(() {});
   }
+
   void _startSearch() {
     ModalRoute.of(context)!
         .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
@@ -98,16 +127,36 @@ class _CatsScreenState extends State<CatsScreen> {
       _isSearching = true;
     });
   }
+
   void _stopSearching() {
     _clearSearchQuery();
     setState(() {
       _isSearching = false;
     });
   }
+
   void _clearSearchQuery() {
     setState(() {
       _searchController.clear();
     });
+  }
+
+  Widget _buildNoInternetWidget() {
+    return Center(
+      child: Container(
+          color: MyColors.myWhite,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
+              Image.asset("assets/images/undraw_cat.png"),
+              const Text(
+                "can't connect .. check the internet",
+                style: TextStyle(fontSize: 22, color: MyColors.mySecondary),
+              ),
+            ],
+          )),
+    );
   }
 
   Widget _buildBlocWidget() {
@@ -126,6 +175,7 @@ class _CatsScreenState extends State<CatsScreen> {
       },
     );
   }
+
   Widget _buildLoadedListWidgets() {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -136,11 +186,17 @@ class _CatsScreenState extends State<CatsScreen> {
       ),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        return CatItem(cat: _searchController.text.isEmpty? allCats[index]: searchResultCats[index]);
+        return CatItem(
+            cat: _searchController.text.isEmpty
+                ? allCats[index]
+                : searchResultCats[index]);
       },
-      itemCount: _searchController.text.isEmpty? allCats.length: searchResultCats.length,
+      itemCount: _searchController.text.isEmpty
+          ? allCats.length
+          : searchResultCats.length,
     );
   }
+
   Widget _showLoadingIndicator() {
     return const Center(
       child: CircularProgressIndicator(),
