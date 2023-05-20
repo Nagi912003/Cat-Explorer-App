@@ -6,7 +6,7 @@ class CatsRepository {
   final CatsWebService _catsWebService;
   CatsRepository(this._catsWebService);
 
-  Future<List<dynamic>> getAllCats() async{
+  Future<List<Cat>> getAllCats() async{
     final cats = await _catsWebService.getAllCats();
     return cats.map((cat) => Cat.fromJson(cat)).toList();
   }
