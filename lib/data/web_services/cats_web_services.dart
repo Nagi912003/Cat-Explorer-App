@@ -17,7 +17,7 @@ class CatsWebService {
 
   Future<List<dynamic>> getAllCats() async {
     try {
-      Response response = await dio.get('/cats');
+      Response response = await dio.get('/api/cats');
       print(response.data.toString());
       return response.data;
     } catch (e) {
