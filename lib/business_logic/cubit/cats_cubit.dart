@@ -9,7 +9,7 @@ import 'cats_state.dart';
 class CatsCubit extends Cubit<CatsState> {
 
   final CatsRepository catsRepository;
-  late List<Cat> cats;
+  List<Cat> cats = [];
 
   CatsCubit(this.catsRepository) : super(CatsInitial());
 

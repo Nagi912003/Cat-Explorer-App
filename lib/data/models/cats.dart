@@ -15,6 +15,8 @@ class Cat{
     updatedAt = json['updatedAt'];
   }
 
+  get isNull => sId == null;
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['_id'] = sId;

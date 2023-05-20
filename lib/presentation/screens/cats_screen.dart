@@ -1,7 +1,7 @@
+import 'package:cats_app/presentation/widgets/cat_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:cats_app/constants/strings.dart';
 import '../../data/models/cats.dart';
 
 import 'package:cats_app/business_logic/cubit/cats_state.dart';
@@ -51,25 +51,6 @@ class _CatsScreenState extends State<CatsScreen> {
     return buildCatsGrid();
   }
 
-  Widget buildCatsListWidgets() {
-    return ListView.builder(
-      itemCount: allCats.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(allCats[index].tags!.isNotEmpty
-              ? allCats[index].tags!.first
-              : "no tags for this cat"),
-          subtitle: Text(allCats[index].owner!.isNotEmpty
-              ? allCats[index].owner!
-              : "no owner for this cat"),
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage('$baseUrl/c/${allCats[index].sId}'),
-          ),
-        );
-      },
-    );
-  }
-
   Widget buildCatsGrid() {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -80,21 +61,7 @@ class _CatsScreenState extends State<CatsScreen> {
       ),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        return GridTile(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Colors.grey,
-                width: 3,
-              ),
-            ),
-            child: Image.network(
-               '$baseUrl/c/${allCats[index].sId}',
-              fit: BoxFit.cover,
-            ),
-          ),
-        );
+        return CatItem(cat:allCats[index]);
       },
       itemCount: allCats.length,
     );
@@ -105,6 +72,12 @@ class _CatsScreenState extends State<CatsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cats'),
+        actions: [
+          Image.asset(
+            'assets/images/loading-animation.gif',
+            width: 50,
+            height: 50,),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
