@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:bloc_broject/app_router.dart';
+import 'package:cats_app/app_router.dart';
 
 void main() {
   runApp(const CatsApp());
